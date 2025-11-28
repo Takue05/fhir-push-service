@@ -113,14 +113,34 @@ public class FhirMapperService {
             } catch (NumberFormatException ignored) {}
         }
 
+        // Jurisdiction Extension (Province + District)
+        Extension jurisdictionExtension = new Extension();
+        jurisdictionExtension.setUrl("http://gofr.org/fhir/StructureDefinition/gofr-jurisdiction");
+
+        if (facility.getDistrict() != null) {
+            Extension district = new Extension();
+            district.setUrl("district");
+            district.setValue(new StringType(facility.getDistrict()));
+            jurisdictionExtension.addExtension(district);
+        }
+
+        if (facility.getProvince() != null) {
+            Extension province = new Extension();
+            province.setUrl("province");
+            province.setValue(new StringType(facility.getProvince()));
+            jurisdictionExtension.addExtension(province);
+        }
+
+        location.addExtension(jurisdictionExtension);
+
+
         // Managing Organization
         location.setManagingOrganization(new Reference("Organization/mock-org-2"));
 
 
-        // Mode
         location.setMode(Location.LocationMode.INSTANCE);
 
-        // Description
+
         location.setDescription(facility.getLocation());
 
         return location;
